@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="fm">
+请输入要找回密码的用户名<input type="text" id="username" name="username"><div id="di"></div>
+</form>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+    $(function () {
+        $('#username').blur(function () {
+            var  udat=	$('#username').val()
+            $.ajax({
+                url:"http://localhost:80/front/get_username.do",
+                type:"post",
+                dataType:"json",
+                async:false,
+                data:{"username":udat},
+                success:function (e) {
+                    $('#di').text(e.message)
+                  if (e.message=="用户存在,可以修改"){
+                      $('#username').attr("disabled","disabled ")
+                      $("#fm").append($("<label>问题<input value='"+e.list[0].password+"'/></lable>"))
+                      $("#fm").append($("<label>角色<input name='role' id='role'/></lable>"))
+                      $("#fm").append($("<input value='验证角色' id='btn' type='button'/> <br>"))
+
+                      $("#btn").click(function () {
+                          var udat=$("#username").val();
+                          var rdat=$('#role').val();
+                          $.ajax({
+                              url:"http://localhost:80/front//get_role.do",
+                              type:"post",
+                              dataType:"json",
+                              async:false,
+                              data:{"username":udat,"role":rdat},
+                              success:function (e) {
+                                  alert(e.message)
+                                  $("#fm").append($("<label>请输入新密码<input name='role' id='password'/></lable>"))
+                                  $("#fm").append($("<input value='修改密码' id='updatebtn' type='button'/> <br>"))
+
+                                  $("#updatebtn").click(function () {
+                                      var udat=$("#username").val();
+                                      var pdat=$("#password").val();
+                                      $.ajax({
+                                          url:"http://localhost:80/front/update_user.do",
+                                          type:"post",
+                                          dataType:"json",
+                                          async:false,
+                                          data:{"username":udat,"password":pdat},
+                                          success:function (e) {
+                                                 alert(e.message)
+                                              window.location.href="http://localhost:63343/cpts_1293_byy/login.html"
+                                          }
+                                      })
+                                  })
+                              }
+                          })
+                      })
+                  }
+                }
+            })
+        })
+    })
+
+</script>
+
+
+</body>
+</html>

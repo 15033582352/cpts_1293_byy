@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+添加地址页面
+
+<form id="fm">
+    <br/>
+    姓名:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="revicerName" type="text"/><br/>
+    固定电话:<input type="text" name="revicerPhone"/><br/>
+    移动电话:<input type="text" name="revicerMobile"/><br/>
+    城市:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="revicerCity"/><br/>
+    区县:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="revicerDistrict"/><br/>
+    详细地址:<input type="text" name="revicerAddress"/><br/>
+    邮编:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="revicerZip"/><br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="btn" type="button" value="添加"/><span id="sp"/>
+</form>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+<script>
+$(function () {
+    $("#btn").click(function () {
+        var data= $('#fm').serialize();
+      var  userId=sessionStorage.getItem("uid")
+        $.ajax({
+            url:"http://localhost:80/back/addShipping.do?userId="+userId+"",
+            data:data,
+            dataType:"json",
+            type:"post",
+            success:function (e) {
+                $('#sp').text(e.message)
+                if (e.message="添加成功"){
+                    window.location.href="confirmOrder.html"
+                }
+            }
+        })
+    })
+
+})
+    /*axios.post("http://localhost:80/back/addShipping.do",{
+
+    })*/
+</script>
+</body>
+</html>

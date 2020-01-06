@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="order by dede58.com"/>
+	<title>我的购物车-手机商城</title>
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+<body>
+<!-- start header -->
+<!--end header -->
+<header>
+	<div class="top center">
+		<div class="left fl">
+			<ul>
+				<li><a href="http://www.mi.com/" target="_blank">手机商城</a></li>
+				<li>|</li>
+				<li><a href="">首页</a></li>
+				<li>|</li>
+				<li><a href="">聊天</a></li>
+				<li>|</li>
+				<li><a href="">游戏</a></li>
+				<li>|</li>
+				<li><a href="">多看阅读</a></li>
+				<li>|</li>
+				<li><a href="">云服务</a></li>
+				<li>|</li>
+				<li><a href="">金融</a></li>
+				<li>|</li>
+				<li><a href="">手机商城移动版</a></li>
+				<li>|</li>
+				<li><a href="">问题反馈</a></li>
+				<li>|</li>
+				<li><a href="">Select Region</a></li>
+				<div class="clear"></div>
+			</ul>
+		</div>
+		<div class="right fr">
+			<div class="gouwuche fr"><a href="" @click="getgwc" >购物车</a></div>
+			<div class="fr">
+				<ul>
+					<li><a href="./login.html" target="_blank">登录</a></li>
+					<li>|</li>
+					<li><a href="./sign-up.html" target="_blank" >注册</a></li>
+					<li>|</li>
+					<li><a href="dingdancenter.html" target="_blank" >订单中心</a></li>
+					<li>|</li>
+					<li><a href="">消息通知</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</header>
+<!-- start banner_x -->
+<div class="banner_x center">
+	<div class="wdgwc fl ml40">我的购物车</div>
+	<div class="wxts fl ml20">温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算</div>
+	<div class="dlzc fr">
+		<ul>
+			<!--<li><a href="./login.html" target="_blank">登录</a></li>
+			<li>|</li>
+			<li><a href="./register.html" target="_blank">注册</a></li>-->
+		</ul>
+
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="xiantiao"></div>
+<div class="gwcxqbj" id="app">
+	<div class="gwcxd center">
+		<div class="top2 center">
+			<div class="sub_top fl">
+				<input type="checkbox" v-show ="chs==1" checked="checked" value="quanxuan" class="quanxuan" />全选
+			</div>
+			<div class="sub_top fl">商品名称</div>
+			<div class="sub_top fl">单价</div>
+			<div class="sub_top fl">数量</div >
+			<div class="sub_top fl">小计</div>
+
+			<div class="clear"></div>
+		</div>
+		<div class="content2 center" v-for="item in list">
+			<div class="sub_content fl ">
+				<input type="checkbox" value="quanxuan" v-if="item.checked==0"   @click="updateChecked(item)" class="quanxuan" />
+				<input type="checkbox" value="quanxuan" v-if="item.checked==1" @click="updateChecked(item)" checked="checked" class="quanxuan" />
+			</div>
+
+			<div class="sub_content fl"><img :src="item.proUrl" height="80" width="80"></div>
+			<div class="sub_content fl ft20">{{item.proName}}</div>
+			<div class="sub_content fl ">{{item.price}}元</div>
+			<div class="sub_content fl">
+				<input class="shuliang" readonly v-model="item.proQuantity" step="1" min="1" :max="item.stock" >
+			</div>
+
+			<div class="sub_content fl">{{item.total}}</div>
+			<div class="sub_content fl" style="font-size: 10px;"><!--<a href="javascript:void(0)" @click="del(item.proId)"> &lt;!&ndash;@click="deleteCart(item)"&ndash;&gt;删除</a></div>-->
+			<div class="clear"> </div>
+		</div>
+
+	</div>
+	<div class="jiesuandan mt20 center">
+		<div class="tishi fl ml20">
+
+		</div>
+		<div class="jiesuan fr">
+				<div class="jiesuanjiage fl">合计（不含运费）：<span>{{totalprice}}元</span></div>
+			<div class="jsanniu fr"><input class="jsan" type="button"@click="test()" name="jiesuan"  value="去结算"/></div>
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+</div>
+
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+	var param=window.location.href.substring(window.location.href.indexOf("?")+1)
+	var vm= new Vue({
+		el:"#app",
+		data:{
+			chs:0,
+			totalprice:0,
+			list:[],
+			count:0
+		},
+		methods:{
+			getData:function () {
+				var _this=this
+			var uid1=	sessionStorage.getItem("uid");
+				axios.get("http://127.0.0.1/front/getCart.do?"+param+"",{
+
+					params: {
+                    uid:uid1
+					}
+				}).then(e=>{
+
+					_this.chs=e.data.list[0].allChecked
+					_this.totalprice=e.data.list[0].allPrice
+					_this.list=e.data.list[0].vos
+					console.log(e)
+				})
+			},
+			updateChecked:function (e) {
+				if (e.checked==0){
+					e.checked=1
+				}else if (e.checked==1){
+					e.checked=0
+				}
+
+				var _this=this
+				axios.get("http://localhost:80/front/updateCart.do",{
+					params:{
+						 userId:1,
+						proId:e.proId,
+						checked:e.checked
+					}
+
+				}).then(e=>{
+					_this.chs=e.data.list[0].allChecked
+			    	_this.totalprice=e.data.list[0].allPrice
+					_this.list=e.data.list[0].vos
+					console.log(e)
+				})
+			},
+			test:function (e) {
+                      var uid =sessionStorage.getItem("uid");
+				window.location.href="http://localhost:63343/cpts_1293_byy/confirmOrder.html?uid="+uid+""
+			},
+			del:function (e) {
+				axios.get("http://localhost:80/front/delByProId.do?proId="+e+"",{
+
+				}).then(function (e) {
+
+				}
+				)
+			}
+		},
+		created:function () {
+			this.getData()
+		}
+		//生命周期  created
+	})
+
+
+
+</script>
+</body>
+</html>
